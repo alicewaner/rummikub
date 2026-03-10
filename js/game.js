@@ -48,16 +48,23 @@ const Game = {
     // 监听自己手牌
     Sync.subscribeHand(roomCode, this.myUid, tiles => {
       this.handSnapshot = [...tiles];
-      Rack.setTiles(tiles);
+      // 只在非自己回合时同步手牌，避免覆盖本地拖拽操作
+      if (!this.isMyTurn) {
+        Rack.setTiles(tiles);
+      } else if (Rack.tiles.length === 0) {
+        Rack.setTiles(tiles);
+      }
     });
   },
 
   _onRoomUpdate(data) {
+    const prevTurnIndex = this.roomData?.currentTurnIndex;
     this.roomData = data;
 
     // 更新当前回合玩家
     const currentPlayer = data.players[data.currentTurnIndex];
     const isMyTurn = currentPlayer?.uid === this.myUid;
+    const turnChanged = prevTurnIndex !== data.currentTurnIndex;
     this.isMyTurn = isMyTurn;
 
     document.getElementById('current-player-name').textContent = currentPlayer?.displayName || '?';
@@ -67,7 +74,12 @@ const Game = {
 
     // 更新桌面
     this.tableSnapshot = (data.tableSnapshot || []).map(g => [...g]);
-    Board.setGroups(data.table || []);
+    if (turnChanged || !isMyTurn) {
+      // 回合切换或别人的回合：从服务器同步桌面
+      Board.setGroups(data.table || []);
+      // 同时同步手牌
+      Rack.setTiles(this.handSnapshot);
+    }
 
     // 更新剩余牌数
     document.getElementById('tiles-remaining').textContent = `🂠 ${data.tilePool?.length || 0}`;
