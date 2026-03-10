@@ -14,9 +14,14 @@ const Auth = {
     });
 
     // 处理 Google redirect 返回结果
-    auth.getRedirectResult().catch(e => {
+    auth.getRedirectResult().then(result => {
+      if (result && result.user) {
+        console.log('Redirect login success:', result.user.email);
+      }
+    }).catch(e => {
+      console.error('Redirect result error:', e);
       if (e.code) {
-        document.getElementById('login-error').textContent = this._errorMsg(e.code);
+        document.getElementById('login-error').textContent = e.code + ': ' + e.message;
       }
     });
 
@@ -88,7 +93,8 @@ const Auth = {
         await auth.signInWithPopup(provider);
       }
     } catch (e) {
-      document.getElementById('login-error').textContent = this._errorMsg(e.code);
+      console.error('Google login error:', e);
+      document.getElementById('login-error').textContent = e.code + ': ' + e.message;
     }
   },
 
