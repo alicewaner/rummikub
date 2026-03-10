@@ -136,7 +136,13 @@ const Game = {
     if (dropTarget && dropTarget.type === 'table-group') {
       Board.insertTile(dropTarget.groupIndex, dropTarget.insertIndex, tileId);
     } else {
-      Board.addNewGroup(tileId);
+      // 如果桌面上有未完成的组（<3张牌），自动加入最后一个
+      const lastIncomplete = Board.groups.findIndex(g => g.length < 3);
+      if (lastIncomplete !== -1) {
+        Board.insertTile(lastIncomplete, Board.groups[lastIncomplete].length, tileId);
+      } else {
+        Board.addNewGroup(tileId);
+      }
     }
   },
 
