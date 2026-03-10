@@ -84,17 +84,14 @@ const Auth = {
 
   async googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '正在跳转到 Google 登录...';
     try {
-      // 手机端用 redirect 更可靠（popup 容易被拦截）
-      const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        await auth.signInWithRedirect(provider);
-      } else {
-        await auth.signInWithPopup(provider);
-      }
+      // 统一用 redirect，避免 popup 被拦截
+      await auth.signInWithRedirect(provider);
     } catch (e) {
       console.error('Google login error:', e);
-      document.getElementById('login-error').textContent = e.code + ': ' + e.message;
+      errEl.textContent = '[Google] ' + (e.code || '') + ': ' + (e.message || '未知错误');
     }
   },
 
