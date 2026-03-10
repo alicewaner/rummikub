@@ -1,0 +1,10 @@
+{
+  "name": "Rummikub 在线对战",
+  "short_name": "Rummikub",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": []
+}

@@ -1,0 +1,362 @@
+/* === Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #1a1a2e;
+  --bg-light: #16213e;
+  --surface: #0f3460;
+  --primary: #e94560;
+  --primary-hover: #c73e54;
+  --secondary: #533483;
+  --text: #eee;
+  --text-dim: #aaa;
+  --success: #4caf50;
+  --warning: #ff9800;
+  --danger: #f44336;
+  --radius: 8px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* === Screens === */
+.screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  flex-direction: column;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* === Buttons === */
+.btn {
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  color: white;
+  background: var(--surface);
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn-primary {
+  background: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.btn-google {
+  background: #4285f4;
+}
+
+.btn-action {
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* === Game Layout === */
+#game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-light);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#current-player-name {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.turn-badge {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+#timer-display {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--warning);
+}
+
+#timer-display.urgent {
+  color: var(--danger);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.5; }
+}
+
+#tiles-remaining {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* === Opponents Bar === */
+#opponents-bar {
+  display: flex;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(0,0,0,0.2);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.opponent-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface);
+  border-radius: 20px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.opponent-chip.active-turn {
+  border: 2px solid var(--warning);
+}
+
+.opponent-tiles-count {
+  background: rgba(255,255,255,0.15);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+/* === Table Area === */
+#table-area {
+  flex: 1;
+  overflow: auto;
+  padding: 10px;
+  position: relative;
+  background:
+    radial-gradient(ellipse at center, #1b5e20 0%, #0d3010 100%);
+  -webkit-overflow-scrolling: touch;
+}
+
+#table-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+  min-height: 100%;
+  padding-bottom: 60px;
+}
+
+.table-group {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  align-items: center;
+  height: fit-content;
+}
+
+.table-group.invalid {
+  background: rgba(244,67,54,0.3);
+  border: 1px dashed var(--danger);
+}
+
+.table-group.valid {
+  background: rgba(76,175,80,0.15);
+}
+
+#table-drop-zone {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: rgba(255,255,255,0.6);
+  background: rgba(76,175,80,0.15);
+  border: 2px dashed rgba(76,175,80,0.5);
+  border-radius: var(--radius);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* === Action Bar === */
+#action-bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-light);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* === Rack Area === */
+#rack-area {
+  background: var(--bg-light);
+  padding: 8px 8px calc(8px + var(--safe-bottom));
+  flex-shrink: 0;
+  min-height: 100px;
+  border-top: 2px solid rgba(255,255,255,0.1);
+}
+
+#rack-tiles {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  padding: 4px 0;
+  -webkit-overflow-scrolling: touch;
+  align-items: flex-end;
+  min-height: 70px;
+}
+
+/* === Toast === */
+.toast {
+  position: fixed;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 1000;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.toast.hidden {
+  opacity: 0;
+}
+
+/* === Modal === */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: var(--bg-light);
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-bottom: 16px;
+}
+
+.modal-content .btn {
+  margin-top: 16px;
+}
+
+/* === Error message === */
+.error-msg {
+  color: var(--danger);
+  font-size: 13px;
+  min-height: 20px;
+  margin-top: 8px;
+}
+
+/* === Utilities === */
+.hidden {
+  display: none !important;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
+/* === Score Table === */
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+}
+
+.score-table th, .score-table td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.score-table .winner {
+  color: var(--success);
+  font-weight: 700;
+}

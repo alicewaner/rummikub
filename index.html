@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Rummikub 在线对战</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/lobby.css">
+  <link rel="stylesheet" href="css/tiles.css">
+</head>
+<body>
+  <!-- 登录屏幕 -->
+  <div id="screen-login" class="screen active">
+    <div class="login-container">
+      <h1>🎲 Rummikub</h1>
+      <p class="subtitle">在线多人对战</p>
+      <div class="login-form">
+        <input type="email" id="login-email" placeholder="邮箱地址" autocomplete="email">
+        <input type="password" id="login-password" placeholder="密码" autocomplete="current-password">
+        <button id="btn-login" class="btn btn-primary">登录</button>
+        <button id="btn-register" class="btn btn-secondary">注册</button>
+        <div class="divider"><span>或</span></div>
+        <button id="btn-google" class="btn btn-google">Google 登录</button>
+      </div>
+      <p id="login-error" class="error-msg"></p>
+    </div>
+  </div>
+
+  <!-- 大厅屏幕 -->
+  <div id="screen-lobby" class="screen">
+    <div class="lobby-container">
+      <div class="lobby-header">
+        <span id="user-name"></span>
+        <button id="btn-logout" class="btn btn-small">登出</button>
+      </div>
+      <h2>游戏大厅</h2>
+      <div class="lobby-actions">
+        <button id="btn-create-room" class="btn btn-primary">创建房间</button>
+        <div class="join-room">
+          <input type="text" id="input-room-code" placeholder="输入房间码" maxlength="6">
+          <button id="btn-join-room" class="btn btn-secondary">加入</button>
+        </div>
+      </div>
+      <p id="lobby-error" class="error-msg"></p>
+
+      <!-- 房间等待区 -->
+      <div id="room-panel" class="room-panel hidden">
+        <h3>房间: <span id="room-code-display"></span></h3>
+        <ul id="player-list"></ul>
+        <button id="btn-start-game" class="btn btn-primary hidden">开始游戏</button>
+        <button id="btn-leave-room" class="btn btn-secondary">离开房间</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 游戏屏幕 -->
+  <div id="screen-game" class="screen">
+    <!-- 头部信息栏 -->
+    <div id="game-header">
+      <div class="header-left">
+        <span id="current-player-name">等待中...</span>
+        <span id="turn-indicator" class="turn-badge">的回合</span>
+      </div>
+      <div class="header-right">
+        <span id="timer-display">2:00</span>
+        <span id="tiles-remaining" title="剩余牌数">🂠 0</span>
+      </div>
+    </div>
+
+    <!-- 对手信息栏 -->
+    <div id="opponents-bar"></div>
+
+    <!-- 桌面区域 -->
+    <div id="table-area">
+      <div id="table-groups"></div>
+      <div id="table-drop-zone" class="drop-hint hidden">拖到这里出牌</div>
+    </div>
+
+    <!-- 操作按钮栏 -->
+    <div id="action-bar">
+      <button id="btn-sort" class="btn btn-action">排序</button>
+      <button id="btn-undo" class="btn btn-action">撤销</button>
+      <button id="btn-end-turn" class="btn btn-action btn-primary">结束回合</button>
+      <button id="btn-draw" class="btn btn-action">摸牌</button>
+    </div>
+
+    <!-- 手牌区域 -->
+    <div id="rack-area">
+      <div id="rack-tiles"></div>
+    </div>
+
+    <!-- 游戏结束弹窗 -->
+    <div id="game-over-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="game-over-title">游戏结束</h2>
+        <div id="game-over-scores"></div>
+        <button id="btn-back-lobby" class="btn btn-primary">返回大厅</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <!-- App modules -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/tile.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/lobby.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/drag.js"></script>
+  <script src="js/rack.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+/* === Login Screen === */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.login-container h1 {
+  font-size: 36px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--text-dim);
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.login-form input {
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+}
+
+.login-form input:focus {
+  border-color: var(--primary);
+}
+
+/* === Lobby Screen === */
+.lobby-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+}
+
+.lobby-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 16px;
+}
+
+#user-name {
+  font-weight: 600;
+}
+
+.lobby-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.lobby-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  max-width: 320px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.join-room {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.join-room input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  font-size: 15px;
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 3px;
+  outline: none;
+}
+
+.join-room input:focus {
+  border-color: var(--primary);
+}
+
+.lobby-actions .btn-primary {
+  width: 100%;
+}
+
+/* === Room Panel === */
+.room-panel {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.room-panel h3 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+#room-code-display {
+  color: var(--warning);
+  font-size: 20px;
+  letter-spacing: 3px;
+}
+
+#player-list {
+  list-style: none;
+  margin-bottom: 12px;
+}
+
+#player-list li {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#player-list li:last-child {
+  border-bottom: none;
+}
+
+.player-host-badge {
+  font-size: 11px;
+  background: var(--warning);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.room-panel .btn {
+  width: 100%;
+  margin-top: 6px;
+}
