@@ -8,8 +8,20 @@ const Game = {
   tableSnapshot: [],    // 回合开始时的桌面快照
   handSnapshot: [],     // 回合开始时的手牌快照
   _timeoutFired: false,
+  _active: false,       // 防止重复启动
+  _dragInited: false,
 
   start(roomCode, initialData) {
+    // 防止重复启动
+    if (this._active && this.roomCode === roomCode) return;
+    this._active = true;
+
+    // 停止 Lobby 的监听器，由 Game 接管
+    if (Lobby._unsubRoom) {
+      Lobby._unsubRoom();
+      Lobby._unsubRoom = null;
+    }
+
     this.roomCode = roomCode;
     this.roomData = initialData;
     this.myUid = Auth.currentUser.uid;
@@ -17,7 +29,11 @@ const Game = {
     this._timeoutFired = false;
 
     Utils.switchScreen('screen-game');
-    Drag.init();
+
+    if (!this._dragInited) {
+      this._dragInited = true;
+      Drag.init();
+    }
 
     // 绑定按钮
     document.getElementById('btn-sort').onclick = () => Rack.toggleSort();
@@ -284,6 +300,7 @@ const Game = {
     Utils.hide('game-over-modal');
     this.roomCode = null;
     this.roomData = null;
+    this._active = false;
     Lobby.currentRoomCode = null;
     Lobby._cleanup();
     Utils.switchScreen('screen-lobby');
