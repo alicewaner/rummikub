@@ -8,6 +8,10 @@ const Lobby = {
     document.getElementById('btn-join-room').addEventListener('click', () => this.joinRoom());
     document.getElementById('btn-start-game').addEventListener('click', () => this.startGame());
     document.getElementById('btn-leave-room').addEventListener('click', () => this.leaveRoom());
+    document.getElementById('btn-share-room').addEventListener('click', () => this.shareRoom());
+
+    // 检查 URL 中是否有房间码，自动加入
+    this._checkUrlRoomCode();
   },
 
   async createRoom() {
@@ -222,6 +226,39 @@ const Lobby = {
         Game.start(code, data);
       }
     });
+  },
+
+  shareRoom() {
+    if (!this.currentRoomCode) return;
+    const url = `${location.origin}${location.pathname}?room=${this.currentRoomCode}`;
+
+    if (navigator.share) {
+      // 手机原生分享
+      navigator.share({
+        title: 'Rummikub 对战',
+        text: `来玩 Rummikub！房间码: ${this.currentRoomCode}`,
+        url: url
+      }).catch(() => {});
+    } else {
+      // 复制到剪贴板
+      navigator.clipboard.writeText(url).then(() => {
+        Utils.showToast('链接已复制');
+      }).catch(() => {
+        Utils.showToast(url);
+      });
+    }
+  },
+
+  _checkUrlRoomCode() {
+    const params = new URLSearchParams(location.search);
+    const code = params.get('room');
+    if (code) {
+      // 清除 URL 参数，避免刷新重复加入
+      history.replaceState(null, '', location.pathname);
+      // 自动填入房间码并加入
+      document.getElementById('input-room-code').value = code;
+      this.joinRoom();
+    }
   },
 
   _cleanup() {
