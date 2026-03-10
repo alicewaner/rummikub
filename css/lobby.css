@@ -47,6 +47,7 @@
   flex-direction: column;
   height: 100%;
   padding: 16px;
+  padding-top: calc(16px + env(safe-area-inset-top, 20px));
 }
 
 .lobby-header {
