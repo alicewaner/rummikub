@@ -197,76 +197,89 @@ const Game = {
   // === 回合操作 ===
 
   async endTurn() {
-    if (!this.isMyTurn) return;
-
-    const table = Board.groups.map(g => [...g]);
-    const hand = [...Rack.tiles];
-
-    // 检查桌面是否有改变
-    const tableChanged = JSON.stringify(table) !== JSON.stringify(this.tableSnapshot);
-
-    if (!tableChanged) {
-      Utils.showToast('请出牌或摸牌');
+    if (!this.isMyTurn) {
+      Utils.showToast('不是你的回合');
       return;
     }
 
-    // 验证桌面所有组合
-    if (!Validation.validateTable(table)) {
-      Utils.showToast('桌面存在不合法的组合');
-      return;
-    }
+    try {
+      const table = Board.groups.map(g => [...g]);
+      const hand = [...Rack.tiles];
 
-    // 检查首次出牌
-    const uid = this.myUid;
-    const initialDone = this.roomData.initialMeldDone?.[uid];
+      // 检查桌面是否有改变
+      const tableChanged = JSON.stringify(table) !== JSON.stringify(this.tableSnapshot);
 
-    if (!initialDone) {
-      if (!Validation.checkInitialMeld(table, this.tableSnapshot, hand)) {
-        Utils.showToast('首次出牌需要 ≥30 分（仅用手牌）');
+      if (!tableChanged) {
+        Utils.showToast('请出牌或摸牌');
         return;
       }
-      // 标记首次出牌完成
-      await Sync.markInitialMeld(this.roomCode, uid);
-    }
 
-    // 计算下一个玩家
-    const nextIndex = (this.roomData.currentTurnIndex + 1) % this.roomData.players.length;
+      // 验证桌面所有组合
+      if (!Validation.validateTable(table)) {
+        Utils.showToast('桌面存在不合法的组合');
+        return;
+      }
 
-    // 检查是否赢了
-    if (hand.length === 0) {
-      // 赢了！
-      const scores = await Scoring.calculateScores(
-        this.roomCode, this.roomData.players, uid
-      );
+      // 检查首次出牌
+      const uid = this.myUid;
+      const initialDone = this.roomData.initialMeldDone?.[uid];
+
+      if (!initialDone) {
+        if (!Validation.checkInitialMeld(table, this.tableSnapshot, hand)) {
+          Utils.showToast('首次出牌需要 ≥30 分（仅用手牌）');
+          return;
+        }
+        // 标记首次出牌完成
+        await Sync.markInitialMeld(this.roomCode, uid);
+      }
+
+      // 计算下一个玩家
+      const nextIndex = (this.roomData.currentTurnIndex + 1) % this.roomData.players.length;
+
+      // 检查是否赢了
+      if (hand.length === 0) {
+        // 赢了！
+        const scores = await Scoring.calculateScores(
+          this.roomCode, this.roomData.players, uid
+        );
+        await Sync.endTurn(this.roomCode, uid, table, hand, nextIndex);
+        await Sync.finishGame(this.roomCode, uid, scores);
+        return;
+      }
+
       await Sync.endTurn(this.roomCode, uid, table, hand, nextIndex);
-      await Sync.finishGame(this.roomCode, uid, scores);
-      return;
+      Utils.showToast('回合结束');
+    } catch (err) {
+      console.error('endTurn error:', err);
+      Utils.showToast('操作失败: ' + err.message);
     }
-
-    await Sync.endTurn(this.roomCode, uid, table, hand, nextIndex);
-    Utils.showToast('回合结束');
   },
 
   async drawTile() {
     if (!this.isMyTurn) return;
 
-    const pool = this.roomData.tilePool;
-    if (!pool || pool.length === 0) {
-      Utils.showToast('牌池已空');
-      return;
+    try {
+      const pool = this.roomData.tilePool;
+      if (!pool || pool.length === 0) {
+        Utils.showToast('牌池已空');
+        return;
+      }
+
+      const tileId = pool[0];
+      const newPool = pool.slice(1);
+      const nextIndex = (this.roomData.currentTurnIndex + 1) % this.roomData.players.length;
+
+      await Sync.drawTile(
+        this.roomCode, this.myUid, tileId, newPool,
+        this.handSnapshot, nextIndex,
+        this.roomData.table, this.tableSnapshot
+      );
+
+      Utils.showToast('摸了一张牌');
+    } catch (err) {
+      console.error('drawTile error:', err);
+      Utils.showToast('摸牌失败: ' + err.message);
     }
-
-    const tileId = pool[0];
-    const newPool = pool.slice(1);
-    const nextIndex = (this.roomData.currentTurnIndex + 1) % this.roomData.players.length;
-
-    await Sync.drawTile(
-      this.roomCode, this.myUid, tileId, newPool,
-      this.handSnapshot, nextIndex,
-      this.roomData.table, this.tableSnapshot
-    );
-
-    Utils.showToast('摸了一张牌');
   },
 
   undoTurn() {
