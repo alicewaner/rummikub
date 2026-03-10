@@ -99,6 +99,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
+  padding-top: calc(8px + env(safe-area-inset-top, 20px));
   background: var(--bg-light);
   border-bottom: 1px solid rgba(255,255,255,0.1);
   min-height: 44px;
