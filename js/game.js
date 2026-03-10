@@ -72,11 +72,13 @@ const Game = {
     // 更新对手信息栏
     this._renderOpponents(data);
 
-    // 更新桌面
-    this.tableSnapshot = (data.tableSnapshot || []).map(g => [...g]);
+    // 更新桌面（从 Firestore 格式还原嵌套数组）
+    const serverTable = Sync._unpackTable(data.table);
+    const serverSnapshot = Sync._unpackTable(data.tableSnapshot);
+    this.tableSnapshot = serverSnapshot.map(g => [...g]);
     if (turnChanged || !isMyTurn) {
       // 回合切换或别人的回合：从服务器同步桌面
-      Board.setGroups(data.table || []);
+      Board.setGroups(serverTable);
       // 同时同步手牌
       Rack.setTiles(this.handSnapshot);
     }

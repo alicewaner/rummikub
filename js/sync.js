@@ -22,15 +22,26 @@ const Sync = {
       });
   },
 
+  // 嵌套数组转为 Firestore 支持的格式
+  _packTable(table) {
+    return (table || []).map(g => ({ tiles: [...g] }));
+  },
+
+  // 从 Firestore 格式还原为嵌套数组
+  _unpackTable(data) {
+    if (!data || !Array.isArray(data)) return [];
+    return data.map(g => (Array.isArray(g) ? g : (g.tiles || [])));
+  },
+
   // 结束回合 — 提交桌面和手牌
   async endTurn(roomCode, uid, table, hand, nextTurnIndex) {
     const roomRef = db.collection('rooms').doc(roomCode);
     const batch = db.batch();
 
-    const tableCopy = table.map(g => [...g]);
+    const packed = this._packTable(table);
     batch.update(roomRef, {
-      table: tableCopy,
-      tableSnapshot: tableCopy.map(g => [...g]),
+      table: packed,
+      tableSnapshot: this._packTable(table),
       currentTurnIndex: nextTurnIndex,
       turnStartedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -54,11 +65,10 @@ const Sync = {
     const roomRef = db.collection('rooms').doc(roomCode);
     const batch = db.batch();
 
-    const snapshotCopy = tableSnapshot.map(g => [...g]);
     batch.update(roomRef, {
       tilePool: newPool,
-      table: snapshotCopy,
-      tableSnapshot: snapshotCopy.map(g => [...g]), // 同步更新快照
+      table: this._packTable(tableSnapshot),
+      tableSnapshot: this._packTable(tableSnapshot),
       currentTurnIndex: nextTurnIndex,
       turnStartedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
