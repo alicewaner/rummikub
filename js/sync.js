@@ -22,15 +22,22 @@ const Sync = {
       });
   },
 
-  // 嵌套数组转为 Firestore 支持的格式
+  // 嵌套数组序列化为 JSON 字符串存 Firestore
   _packTable(table) {
-    return (table || []).map(g => ({ tiles: [...g] }));
+    return JSON.stringify(table || []);
   },
 
-  // 从 Firestore 格式还原为嵌套数组
+  // 从 JSON 字符串还原
   _unpackTable(data) {
-    if (!data || !Array.isArray(data)) return [];
-    return data.map(g => (Array.isArray(g) ? g : (g.tiles || [])));
+    if (!data) return [];
+    if (typeof data === 'string') {
+      try { return JSON.parse(data); } catch (e) { return []; }
+    }
+    // 兼容旧格式（数组或对象数组）
+    if (Array.isArray(data)) {
+      return data.map(g => (Array.isArray(g) ? g : (g.tiles || [])));
+    }
+    return [];
   },
 
   // 结束回合 — 提交桌面和手牌
