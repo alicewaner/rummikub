@@ -13,6 +13,13 @@ const Auth = {
       if (e.key === 'Enter') this.emailLogin();
     });
 
+    // 处理 Google redirect 返回结果
+    auth.getRedirectResult().catch(e => {
+      if (e.code) {
+        document.getElementById('login-error').textContent = this._errorMsg(e.code);
+      }
+    });
+
     // 监听认证状态
     auth.onAuthStateChanged(user => {
       this.currentUser = user;
@@ -73,7 +80,13 @@ const Auth = {
   async googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      await auth.signInWithPopup(provider);
+      // 手机端用 redirect 更可靠（popup 容易被拦截）
+      const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        await auth.signInWithRedirect(provider);
+      } else {
+        await auth.signInWithPopup(provider);
+      }
     } catch (e) {
       document.getElementById('login-error').textContent = this._errorMsg(e.code);
     }
