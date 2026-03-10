@@ -13,18 +13,6 @@ const Auth = {
       if (e.key === 'Enter') this.emailLogin();
     });
 
-    // 处理 Google redirect 返回结果
-    auth.getRedirectResult().then(result => {
-      if (result && result.user) {
-        console.log('Redirect login success:', result.user.email);
-      }
-    }).catch(e => {
-      console.error('Redirect result error:', e);
-      if (e.code) {
-        document.getElementById('login-error').textContent = e.code + ': ' + e.message;
-      }
-    });
-
     // 监听认证状态
     auth.onAuthStateChanged(user => {
       this.currentUser = user;
@@ -85,10 +73,9 @@ const Auth = {
   async googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
     const errEl = document.getElementById('login-error');
-    errEl.textContent = '正在跳转到 Google 登录...';
+    errEl.textContent = '';
     try {
-      // 统一用 redirect，避免 popup 被拦截
-      await auth.signInWithRedirect(provider);
+      await auth.signInWithPopup(provider);
     } catch (e) {
       console.error('Google login error:', e);
       errEl.textContent = '[Google] ' + (e.code || '') + ': ' + (e.message || '未知错误');
