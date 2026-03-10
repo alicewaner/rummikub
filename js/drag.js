@@ -55,6 +55,9 @@ const Drag = {
       d.el.style.width = d.origWidth + 'px';
       d.el.style.height = d.origHeight + 'px';
       this._showDropZones(true);
+      // 拖拽期间禁止页面滚动
+      document.body.style.touchAction = 'none';
+      document.body.style.overflow = 'hidden';
 
       // 在原位放置占位符
       if (d.source === 'rack') {
@@ -85,6 +88,10 @@ const Drag = {
     d.el.style.width = '';
     d.el.style.height = '';
 
+    // 恢复页面滚动
+    document.body.style.touchAction = '';
+    document.body.style.overflow = '';
+
     this._showDropZones(false);
     Board.clearInsertIndicators();
 
@@ -93,17 +100,18 @@ const Drag = {
 
     if (dropTarget) {
       if (dropTarget.type === 'table-new') {
-        // 新建一组
         Game.moveTileToTable(d.tileId, d.source, null);
       } else if (dropTarget.type === 'table-group') {
-        // 插入到现有组
         Game.moveTileToTable(d.tileId, d.source, dropTarget);
       } else if (dropTarget.type === 'rack') {
-        // 放回手牌
-        Game.moveTileToRack(d.tileId, d.source);
+        if (d.source === 'rack') {
+          // 手牌内重新排序
+          Rack.reorderTile(d.tileId, dropTarget.insertIndex);
+        } else {
+          Game.moveTileToRack(d.tileId, d.source);
+        }
       }
     } else {
-      // 没有有效目标，还原
       Game.cancelMove(d.tileId, d.source);
     }
 
@@ -138,7 +146,17 @@ const Drag = {
     // 检查是否在手牌区
     const rackRect = document.getElementById('rack-area').getBoundingClientRect();
     if (y >= rackRect.top) {
-      return { type: 'rack' };
+      // 计算手牌中的插入位置
+      const tiles = document.querySelectorAll('#rack-tiles .tile, #rack-tiles .tile-ghost');
+      let insertIndex = tiles.length;
+      for (let i = 0; i < tiles.length; i++) {
+        const r = tiles[i].getBoundingClientRect();
+        if (x < r.left + r.width / 2) {
+          insertIndex = i;
+          break;
+        }
+      }
+      return { type: 'rack', insertIndex };
     }
 
     // 检查是否在桌面区域

@@ -16,10 +16,16 @@
   border: 1px solid rgba(0,0,0,0.15);
   transition: transform 0.1s, box-shadow 0.1s;
   touch-action: none;
+  -webkit-touch-callout: none;
 }
 
 .tile:active {
   cursor: grabbing;
+}
+
+/* 手牌区域内的ghost也需要禁用touch-action */
+.tile-ghost {
+  touch-action: none;
 }
 
 /* Tile colors */
@@ -67,11 +73,24 @@
   to { opacity: 1; }
 }
 
-/* Rack tile slightly larger for easier touch */
+/* Rack tile size — compact for multi-row */
 #rack-tiles .tile {
-  width: 42px;
-  height: 58px;
-  font-size: 20px;
+  width: 34px;
+  height: 46px;
+  font-size: 17px;
+}
+
+/* 小屏幕手牌更紧凑 */
+@media (max-width: 380px) {
+  #rack-tiles .tile {
+    width: 30px;
+    height: 40px;
+    font-size: 15px;
+  }
+  #rack-tiles .tile-ghost {
+    width: 30px;
+    height: 40px;
+  }
 }
 
 /* New tile highlight */

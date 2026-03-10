@@ -27,9 +27,10 @@ const Sync = {
     const roomRef = db.collection('rooms').doc(roomCode);
     const batch = db.batch();
 
+    const tableCopy = table.map(g => [...g]);
     batch.update(roomRef, {
-      table: table,
-      tableSnapshot: table,
+      table: tableCopy,
+      tableSnapshot: tableCopy.map(g => [...g]),
       currentTurnIndex: nextTurnIndex,
       turnStartedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -53,9 +54,11 @@ const Sync = {
     const roomRef = db.collection('rooms').doc(roomCode);
     const batch = db.batch();
 
+    const snapshotCopy = tableSnapshot.map(g => [...g]);
     batch.update(roomRef, {
       tilePool: newPool,
-      table: tableSnapshot, // 还原桌面到回合开始的状态
+      table: snapshotCopy,
+      tableSnapshot: snapshotCopy.map(g => [...g]), // 同步更新快照
       currentTurnIndex: nextTurnIndex,
       turnStartedAt: firebase.firestore.FieldValue.serverTimestamp()
     });

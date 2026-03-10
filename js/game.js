@@ -199,8 +199,8 @@ const Game = {
   async endTurn() {
     if (!this.isMyTurn) return;
 
-    const table = Board.groups;
-    const hand = Rack.tiles;
+    const table = Board.groups.map(g => [...g]);
+    const hand = [...Rack.tiles];
 
     // 检查桌面是否有改变
     const tableChanged = JSON.stringify(table) !== JSON.stringify(this.tableSnapshot);

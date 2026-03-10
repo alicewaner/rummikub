@@ -27,7 +27,6 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -184,6 +183,7 @@ html, body {
   background:
     radial-gradient(ellipse at center, #1b5e20 0%, #0d3010 100%);
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
 }
 
 #table-groups {
@@ -244,20 +244,22 @@ html, body {
 /* === Rack Area === */
 #rack-area {
   background: var(--bg-light);
-  padding: 8px 8px calc(8px + var(--safe-bottom));
+  padding: 6px 6px calc(6px + var(--safe-bottom));
   flex-shrink: 0;
-  min-height: 100px;
   border-top: 2px solid rgba(255,255,255,0.1);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  max-height: 40vh;
 }
 
 #rack-tiles {
   display: flex;
+  flex-wrap: wrap;
   gap: 3px;
-  overflow-x: auto;
-  padding: 4px 0;
-  -webkit-overflow-scrolling: touch;
-  align-items: flex-end;
-  min-height: 70px;
+  padding: 2px 0;
+  min-height: 50px;
+  min-width: min-content;
 }
 
 /* === Toast === */

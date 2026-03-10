@@ -61,6 +61,20 @@ const Rack = {
     this.render();
   },
 
+  // 手牌内拖拽重新排序
+  reorderTile(tileId, toIndex) {
+    const fromIndex = this.tiles.indexOf(tileId);
+    if (fromIndex === -1) return;
+    this.tiles.splice(fromIndex, 1);
+    // 调整目标位置（因为移除了一个元素）
+    if (toIndex > fromIndex) toIndex--;
+    if (toIndex < 0) toIndex = 0;
+    if (toIndex > this.tiles.length) toIndex = this.tiles.length;
+    this.tiles.splice(toIndex, 0, tileId);
+    this._ghostId = null;
+    this.render();
+  },
+
   // 交替排序方式
   _sortMode: 'color',
   toggleSort() {
