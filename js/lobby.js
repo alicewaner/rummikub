@@ -92,6 +92,20 @@ const Lobby = {
       }
 
       const data = doc.data();
+      const alreadyInRoom = data.players.some(p => p.uid === user.uid);
+
+      // 已在房间中 — 直接进入（可能游戏已开始）
+      if (alreadyInRoom) {
+        this.currentRoomCode = code;
+        if (data.status === 'playing') {
+          Game.start(code, data);
+        } else {
+          this._showRoomPanel(code, data.hostUid === user.uid);
+          this._subscribeRoom(code);
+        }
+        return;
+      }
+
       if (data.status !== 'waiting') {
         errEl.textContent = '游戏已开始';
         return;
@@ -99,15 +113,6 @@ const Lobby = {
 
       if (data.players.length >= 4) {
         errEl.textContent = '房间已满';
-        return;
-      }
-
-      // 检查是否已在房间中
-      if (data.players.some(p => p.uid === user.uid)) {
-        this.currentRoomCode = code;
-        this._showRoomPanel(code, data.hostUid === user.uid);
-        this._subscribeRoom(code);
-        Utils.showToast('已在房间中');
         return;
       }
 
