@@ -13,6 +13,14 @@ const Auth = {
       if (e.key === 'Enter') this.emailLogin();
     });
 
+    // 处理 Google redirect 登录返回
+    auth.getRedirectResult().catch(e => {
+      if (e.code) {
+        document.getElementById('login-error').textContent =
+          '[Google] ' + (e.message || '登录失败');
+      }
+    });
+
     // 监听认证状态
     auth.onAuthStateChanged(user => {
       this.currentUser = user;
@@ -75,7 +83,12 @@ const Auth = {
     const errEl = document.getElementById('login-error');
     errEl.textContent = '';
     try {
-      await auth.signInWithPopup(provider);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        await auth.signInWithRedirect(provider);
+      } else {
+        await auth.signInWithPopup(provider);
+      }
     } catch (e) {
       console.error('Google login error:', e);
       errEl.textContent = '[Google] ' + (e.code || '') + ': ' + (e.message || '未知错误');
