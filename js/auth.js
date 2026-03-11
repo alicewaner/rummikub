@@ -83,10 +83,19 @@ const Auth = {
     const errEl = document.getElementById('login-error');
     errEl.textContent = '';
     try {
-      await auth.signInWithRedirect(provider);
+      await auth.signInWithPopup(provider);
     } catch (e) {
-      console.error('Google login error:', e);
-      errEl.textContent = '[Google] ' + (e.code || '') + ': ' + (e.message || '未知错误');
+      // popup 被拦截或关闭时，降级为 redirect
+      if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user') {
+        try {
+          await auth.signInWithRedirect(provider);
+        } catch (e2) {
+          errEl.textContent = '[Google] ' + (e2.message || '登录失败');
+        }
+      } else {
+        console.error('Google login error:', e);
+        errEl.textContent = '[Google] ' + (e.code || '') + ': ' + (e.message || '未知错误');
+      }
     }
   },
 
