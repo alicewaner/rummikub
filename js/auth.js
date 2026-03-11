@@ -83,12 +83,7 @@ const Auth = {
     const errEl = document.getElementById('login-error');
     errEl.textContent = '';
     try {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        await auth.signInWithRedirect(provider);
-      } else {
-        await auth.signInWithPopup(provider);
-      }
+      await auth.signInWithRedirect(provider);
     } catch (e) {
       console.error('Google login error:', e);
       errEl.textContent = '[Google] ' + (e.code || '') + ': ' + (e.message || '未知错误');
